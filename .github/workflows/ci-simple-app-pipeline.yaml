@@ -16,7 +16,7 @@ jobs:
 
       - name: Run Semgrep Scan
         run: |
-          semgrep scan --config=p/ci --config=p/secrets --json > semgrep-report.json
+          semgrep scan --config=auto --json > semgrep-report.json
 
       - name: Upload Semgrep Report
         uses: actions/upload-artifact@v4
