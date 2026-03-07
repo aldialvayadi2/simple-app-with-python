@@ -46,14 +46,14 @@ jobs:
           scan-type: fs
           severity: CRITICAL,HIGH
           output: trivy-fs-report.txt
+        env:
+          TRIVY_DISABLE_VEX_NOTICE: true
 
       - name: Upload Trivy Report
         uses: actions/upload-artifact@v4
         with:
           name: trivy-fs-report
           path: trivy-fs-report.txt
-        env:
-          TRIVY_DISABLE_VEX_NOTICE: true
 
       - name: Trivy Dependency Scan Summary
         run: |
