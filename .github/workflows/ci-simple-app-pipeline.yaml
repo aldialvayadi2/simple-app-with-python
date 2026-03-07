@@ -87,7 +87,7 @@ jobs:
           echo "## 🐳 Container Image Vulnerabilities (Trivy)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          cat trivy-fs-report.txt >> $GITHUB_STEP_SUMMARY
+          cat trivy-container-report.txt >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
 
   dast:
