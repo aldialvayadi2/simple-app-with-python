@@ -50,15 +50,11 @@ jobs:
         run: |
           docker build -t simple-app-python .
           docker run -d -p 8080:8080 simple-app-python
-          
-      - name: Test app
-        run: |
-          curl http://localhost:8080
-          
-      #- name: Run ZAP baseline scan
-      #  uses: zaproxy/action-baseline@v0.15.0
-      #  with:
-      #    target: 'http://localhost:8080/'
+
+      - name: Run ZAP baseline scan
+        uses: zaproxy/action-baseline@v0.15.0
+        with:
+          target: 'http://localhost:8080/'
       
       #- name: Run ZAP baseline scan
       #  run: |
