@@ -54,7 +54,6 @@ jobs:
       - name: Run ZAP baseline scan
         uses: zaproxy/action-baseline@v0.15.0
         with:
-          docker_name: 'simple-app-python'
           target: 'http://localhost:8080/'
       
       #- name: Run ZAP baseline scan
