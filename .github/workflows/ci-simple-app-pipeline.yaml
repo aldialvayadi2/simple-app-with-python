@@ -33,12 +33,12 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Build Docker image
-        run: docker build -t devsecops-lab .
+        run: docker build -t simple-app-python .
 
       - name: Scan container image
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: devsecops-lab
+          image-ref: simple-app-python
           severity: CRITICAL,HIGH
 
   dast:
@@ -48,8 +48,8 @@ jobs:
 
       - name: Run app
         run: |
-          docker build -t devsecops-lab .
-          docker run -d -p 8080:8080 devsecops-lab
+          docker build -t simple-app-python .
+          docker run -d -p 8080:8080 simple-app-python
 
       - name: Run ZAP baseline scan
         uses: zaproxy/action-baseline@v0.15.0
