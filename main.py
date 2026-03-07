@@ -37,4 +37,4 @@ def exec_cmd():
     return render_template("exec.html", output=output)
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    app.run(host="0.0.0.0", port=8080)
