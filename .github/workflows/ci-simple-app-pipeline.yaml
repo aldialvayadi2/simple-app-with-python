@@ -1,0 +1,64 @@
+name: Simple App Pipeline
+
+on:
+  push:
+  pull_request:
+
+jobs:
+
+  sast:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Run Semgrep SAST
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: auto
+
+  dependency_scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Run Trivy filesystem scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: fs
+          severity: CRITICAL,HIGH
+
+  build_and_scan_container:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build Docker image
+        run: docker build -t devsecops-lab .
+
+      - name: Scan container image
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: devsecops-lab
+          severity: CRITICAL,HIGH
+
+  dast:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Run app
+        run: |
+          docker build -t devsecops-lab .
+          docker run -d -p 8080:8080 devsecops-lab
+
+      - name: Run ZAP baseline scan
+        uses: zaproxy/action-baseline@v0.15.0
+        with:
+          docker_name: 'simple-app-python'
+          target: 'http://localhost:8080/'
+      
+      #- name: Run ZAP baseline scan
+      #  run: |
+      #    docker run --network="host" \
+      #    -t ghcr.io/zaproxy/zaproxy:stable \
+      #    zap-baseline.py -t http://localhost:8080
