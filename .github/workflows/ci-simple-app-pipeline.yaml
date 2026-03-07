@@ -24,6 +24,17 @@ jobs:
           name: semgrep-report
           path: semgrep-report.json
 
+      - name: Semgrep Summary
+        run: |
+          echo "## 🔍 SAST Findings (Semgrep)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| File | Line | Rule | Severity | Description |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|------|------|---------|-------------|" >> $GITHUB_STEP_SUMMARY
+
+          jq -r '.results[] |
+            "| \(.path) | \(.start.line) | \(.check_id) | \(.extra.severity) | \(.extra.message) |"
+          ' semgrep-report.json >> $GITHUB_STEP_SUMMARY
+
   dependency_scan:
     runs-on: ubuntu-latest
     steps:
@@ -34,13 +45,21 @@ jobs:
         with:
           scan-type: fs
           severity: CRITICAL,HIGH
-          output: trivy-fs-report.json
+          output: trivy-fs-report.txt
 
       - name: Upload Trivy Report
         uses: actions/upload-artifact@v4
         with:
           name: trivy-fs-report
-          path: trivy-fs-report.json
+          path: trivy-fs-report.txt
+
+      - name: Trivy Dependency Scan Summary
+        run: |
+          echo "## 🐳 Dependency Vulnerabilities (Trivy)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat trivy-fs-report.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
 
   build_and_scan_container:
     runs-on: ubuntu-latest
@@ -55,13 +74,21 @@ jobs:
         with:
           image-ref: simple-app-python
           severity: CRITICAL,HIGH
-          output: trivy-container-report.json
+          output: trivy-container-report.txt
 
       - name: Upload Trivy Artifact
         uses: actions/upload-artifact@v4
         with:
           name: trivy-container-report
-          path: trivy-container-report.json
+          path: trivy-container-report.txt
+      
+      - name: Trivy Container Image Scan Summary
+        run: |
+          echo "## 🐳 Container Image Vulnerabilities (Trivy)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat trivy-fs-report.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
 
   dast:
     runs-on: ubuntu-latest
@@ -79,3 +106,14 @@ jobs:
           target: 'http://localhost:8080/'
           allow_issue_writing: false
           artifact_name: zap-scan-report
+
+      - name: OWASP ZAP Summary
+        run: |
+          echo "## 🌐 DAST Findings (OWASP ZAP)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| URL | Risk | Vulnerability | Description |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----|------|--------------|-------------|" >> $GITHUB_STEP_SUMMARY
+
+          jq -r '.site[].alerts[] |
+            "| \(.instances[0].uri) | \(.riskdesc) | \(.alert) | \(.desc | gsub("\n"; " ")) |"
+          ' report_json.json >> $GITHUB_STEP_SUMMARY
