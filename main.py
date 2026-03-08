@@ -6,7 +6,7 @@ import shlex
 
 app = Flask(__name__)
 
-API_KEY = environ.get("API_KEY", "THIS_IS_API_KEY")
+API_KEY = environ.get("API_KEY", "THIS_IS_API_KEY_OTHER")
 
 ALLOWED_COMMANDS = {
     "date": ["date"],
