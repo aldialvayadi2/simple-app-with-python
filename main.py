@@ -2,6 +2,7 @@ from flask import Flask, render_template, request
 from os import environ
 from subprocess import run
 import html
+import shlex
 
 app = Flask(__name__)
 
@@ -38,12 +39,16 @@ def exec_cmd():
         if key != API_KEY:
             return "Unauthorized", 401
         
-        cmd = request.form.get("cmd")
-        output = run(
-            ALLOWED_COMMANDS[cmd],
-            capture_output=True,
-            text=True
-        )
+        cmd = shlex.quote(request.form.get("cmd"))
+
+        if cmd in ALLOWED_COMMANDS:
+            output = run(
+                ALLOWED_COMMANDS[cmd],
+                capture_output=True,
+                text=True
+            )
+        else:
+            pass
 
     return render_template("exec.html", output=output)
 
