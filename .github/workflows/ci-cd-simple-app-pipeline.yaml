@@ -143,7 +143,7 @@ jobs:
       - name: Execute Docker Compose on EC2
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.HOST_IP }}
+          host: ${{ secrets.HOST_EC2 }}
           username: ubuntu
           key: ${{ secrets.SSH_KEY }}
           script: |
